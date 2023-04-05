@@ -1,5 +1,6 @@
 import MeetupList from "../components/meetups/MeetupList";
 import Layout from "../components/layout/Layout";
+import {useEffect, useState} from "react";
 const DUMMY_MEETUPS = [
     {
         id: 'm1',
@@ -23,12 +24,22 @@ const DUMMY_MEETUPS = [
         description: 'This is a third, amazing meetup which you definitely should not miss. It will be a lot of fun!'
     }
 ];
-const HomePage = () => {
+const HomePage = (props) => {
+
     return (
         <div>
-            <MeetupList meetups={DUMMY_MEETUPS} />
+            <MeetupList meetups={props.meetups} />
         </div>
     );
 }
 
+export function getStaticProps() {
+    // fetch data from an API
+    return {
+        props: {
+            meetups: DUMMY_MEETUPS,
+        },
+        revalidate: 1,
+    };
+}
 export default HomePage
