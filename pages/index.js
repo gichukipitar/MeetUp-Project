@@ -1,6 +1,5 @@
 import MeetupList from "../components/meetups/MeetupList";
-import Layout from "../components/layout/Layout";
-import {useEffect, useState} from "react";
+
 const DUMMY_MEETUPS = [
     {
         id: 'm1',
@@ -33,6 +32,18 @@ const HomePage = (props) => {
     );
 }
 
+// export async function getServerSideProps(context) {
+//     const req = context.req;
+//     const res = context.res;
+//     // fetch data from an API
+//     return {
+//         props: {
+//             meetups: DUMMY_MEETUPS,
+//         },
+//
+//     };
+// }
+
 export function getStaticProps() {
     // fetch data from an API
     return {
@@ -42,4 +53,4 @@ export function getStaticProps() {
         revalidate: 1,
     };
 }
-export default HomePage
+export default HomePage;
