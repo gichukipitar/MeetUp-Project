@@ -1,5 +1,6 @@
 import NewMeetupForm from "../../components/meetups/NewMeetupForm";
 import {useRouter} from "next/router";
+
 const NewMeetupPage = () => {
 
     const router = useRouter();
@@ -11,9 +12,11 @@ const NewMeetupPage = () => {
                 'Content-Type': 'application/json'
 
             }
-        } );
+        });
         const data = await response.json();
         console.log(data);
+
+
         router.push('/');
 
     }

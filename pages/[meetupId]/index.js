@@ -1,39 +1,58 @@
-import {Fragment} from "react";
 import MeetupDetail from "../../components/meetups/MeetupDetail";
-const MeetupDetails = () => {
+import {MongoClient, ObjectId} from 'mongodb';
+
+const MeetupDetails = (props) => {
     return (
         <MeetupDetail
-        image='https://www.micato.com/wp-content/uploads/2018/09/Nairobi_Skyline.jpg'
-        title='Nairobi'
-        address='Some address 15, 12345 Some City'
-        description='This is a third, amazing meetup which you definitely should not miss. It will be a lot of fun!'
+            image={props.meetupData.image}
+            title={props.meetupData.title}
+            address={props.meetupData.address}
+            description={props.meetupData.description}
         />
     );
 }
 
 export async function getStaticPaths() {
+    const client = await MongoClient.connect('mongodb+srv://root:root@cluster0.shd9alf.mongodb.net/meetups?retryWrites=true&w=majority');
+
+    const db = client.db();
+    const meetupsCollection = db.collection('meetups');
+
+    const meetups = await meetupsCollection.find({}, {_id: 1}).toArray();
+
+    client.close();
     return {
-        paths: [
-            { params: { meetupId: 'm1' } },
-            { params: { meetupId: 'm2' } },
-            { params: { meetupId: 'm3' } },
-        ],
         fallback: false,
+        paths: meetups.map(meetup => ({params: {meetupId: meetup._id.toString()}})),
+        //     [
+        //     { params: { meetupId: 'm1' } },
+        //     { params: { meetupId: 'm2' } },
+        //     { params: { meetupId: 'm3' } },
+        // ],
+        // fallback: false,
     };
 }
 
 export async function getStaticProps(context) {
     // fetch data from an API
     const meetupId = context.params.meetupId;
-    console.log(meetupId);
+
+    const client = await MongoClient.connect('mongodb+srv://root:root@cluster0.shd9alf.mongodb.net/meetups?retryWrites=true&w=majority');
+
+    const db = client.db();
+    const meetupsCollection = db.collection('meetups');
+
+    const selectedMeetup = await meetupsCollection.findOne({_id: new ObjectId(meetupId)});
+
+    client.close();
     return {
         props: {
             meetupData: {
-                image: 'https://www.micato.com/wp-content/uploads/2018/09/Nairobi_Skyline.jpg',
-                id: 'meetupId',
-                title: 'This is a third meetup',
-                address: 'Some address 15, 12345 Some City',
-                description: 'This is a third, amazing meetup which you definitely should not miss. It will be a lot of fun!'
+                id: selectedMeetup._id.toString(),
+                title: selectedMeetup.title,
+                image: selectedMeetup.image,
+                address: selectedMeetup.address,
+                description: selectedMeetup.description,
             },
         },
         revalidate: 1,
